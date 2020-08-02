@@ -1,0 +1,10 @@
+name: marcerFarmworld
+version: 0.1.0
+author: marcermarc
+main: de.marcermarc.farmworld.Main
+api-version: 1.16
+
+commands:
+  marcerFarmworld:
+    description: Configuration of this plugin
+  

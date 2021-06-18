@@ -35,7 +35,7 @@ public class Command implements CommandExecutor, TabCompleter, Listener {
     - marcerFarmworld return playername -> return back player
     */
 
-    private static final String DEFAULT_RETURN_LOC = "defaultReturnLocation";
+    private static final String DEFAULT_RETURN_LOC = "defaultreturnlocation";
     private static final String WORLDS = "worlds";
     private static final String JOIN = "join";
     private static final String RETURN = "return";

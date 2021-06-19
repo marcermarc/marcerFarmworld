@@ -50,7 +50,7 @@ public class ConfigController {
         saveConfig();
     }
 
-    //region loadChunkloader
+    //region load
     public boolean loadConfig() {
         worldSection = configuration.getConfigurationSection(WORLDS);
         if (worldSection == null) {

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -49,6 +50,8 @@ public class WorldController {
 
     public boolean recreate(String name, @Nullable Player player) {
         WorldSettings worldSettings = controller.getConfig().getWorldSettings().get(name);
+
+        worldSettings.setLastRecreation(ZonedDateTime.now());
 
         return delete(name, worldSettings)
                 && create(name, worldSettings, player);

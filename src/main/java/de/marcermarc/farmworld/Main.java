@@ -5,6 +5,7 @@ import de.marcermarc.farmworld.listener.Command;
 import de.marcermarc.farmworld.listener.PlayerDied;
 import de.marcermarc.farmworld.listener.PlayerJoin;
 import de.marcermarc.farmworld.listener.PortalCreated;
+import de.marcermarc.farmworld.timer.RecreateTimer;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,6 +34,9 @@ public class Main extends JavaPlugin {
 
         this.getCommand("marcerFarmworld").setExecutor(c);
         this.getCommand("marcerFarmworld").setTabCompleter(c);
+
+        RecreateTimer timer = new RecreateTimer(controller);
+        timer.init();
     }
 
     @Override

@@ -1,22 +1,33 @@
 package de.marcermarc.farmworld.models;
 
+import com.cronutils.model.Cron;
+import com.cronutils.model.CronType;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldType;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.UUID;
+import java.time.ZonedDateTime;
 
 public class WorldSettings {
     private static final String ENVIRONMENT = "environment";
     private static final String HAS_STRUCTURES = "hasStructures";
     private static final String TYPE = "type";
     private static final String WORLD_SIZE = "worldsize";
+    private static final String RECREATION_RULE = "recreationRule";
+    private static final String LAST_RECREATION = "lastRecreation";
+
+    private static final CronParser CRON_PARSER = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
 
     private World.Environment environment;
     private boolean structures;
     private WorldType type;
     private double worldsize;
+    private String recreationRule;
+    private Cron cronRule;
+    private ZonedDateTime lastRecreation;
 
     private Location returnWorldLocation;
 
@@ -28,6 +39,14 @@ public class WorldSettings {
         this.structures = configurationSection.getBoolean(HAS_STRUCTURES);
         this.type = WorldType.valueOf(configurationSection.getString(TYPE));
         this.worldsize = configurationSection.getDouble(WORLD_SIZE);
+        setRecreationRule(configurationSection.getString(RECREATION_RULE));
+
+        String lastRecreation = configurationSection.getString(LAST_RECREATION);
+        if (lastRecreation != null) {
+            this.lastRecreation = ZonedDateTime.parse(lastRecreation);
+        } else {
+            this.lastRecreation = ZonedDateTime.now();
+        }
     }
 
     public void fillConfig(ConfigurationSection configurationSection) {
@@ -35,6 +54,8 @@ public class WorldSettings {
         configurationSection.set(HAS_STRUCTURES, structures);
         configurationSection.set(TYPE, type.toString());
         configurationSection.set(WORLD_SIZE, worldsize);
+        configurationSection.set(RECREATION_RULE, recreationRule);
+        configurationSection.set(LAST_RECREATION, lastRecreation.toString());
     }
 
     public World.Environment getEnvironment() {
@@ -75,5 +96,31 @@ public class WorldSettings {
 
     public void setReturnWorldLocation(Location returnWorldLocation) {
         this.returnWorldLocation = returnWorldLocation;
+    }
+
+    public String getRecreationRule() {
+        return recreationRule;
+    }
+
+    public void setRecreationRule(String recreationRule) {
+        this.recreationRule = recreationRule;
+
+        try {
+            cronRule = CRON_PARSER.parse(recreationRule).validate();
+        } catch (IllegalArgumentException e) {
+            cronRule = null;
+        }
+    }
+
+    public ZonedDateTime getLastRecreation() {
+        return lastRecreation;
+    }
+
+    public void setLastRecreation(ZonedDateTime lastRecreation) {
+        this.lastRecreation = lastRecreation;
+    }
+
+    public Cron getCronRule() {
+        return cronRule;
     }
 }

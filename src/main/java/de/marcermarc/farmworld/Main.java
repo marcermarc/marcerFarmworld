@@ -41,8 +41,10 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        controller.getPlayerData().save();
-        controller.getConfig().saveConfig();
+        if (controller != null) {
+            controller.getPlayerData().save();
+            controller.getConfig().saveConfig();
+        }
     }
 
 }

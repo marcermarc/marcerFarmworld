@@ -39,10 +39,10 @@ public class WorldSettings {
         this.structures = configurationSection.getBoolean(HAS_STRUCTURES);
         this.type = WorldType.valueOf(configurationSection.getString(TYPE));
         this.worldsize = configurationSection.getDouble(WORLD_SIZE);
-        setRecreationRule(configurationSection.getString(RECREATION_RULE));
+        setRecreationRule(configurationSection.getString(RECREATION_RULE, ""));
 
         String lastRecreation = configurationSection.getString(LAST_RECREATION);
-        if (lastRecreation != null) {
+        if (lastRecreation != null && !lastRecreation.equals("")) {
             this.lastRecreation = ZonedDateTime.parse(lastRecreation);
         } else {
             this.lastRecreation = ZonedDateTime.now();
@@ -55,7 +55,7 @@ public class WorldSettings {
         configurationSection.set(TYPE, type.toString());
         configurationSection.set(WORLD_SIZE, worldsize);
         configurationSection.set(RECREATION_RULE, recreationRule);
-        configurationSection.set(LAST_RECREATION, lastRecreation.toString());
+        configurationSection.set(LAST_RECREATION, lastRecreation == null ? "" : lastRecreation.toString());
     }
 
     public World.Environment getEnvironment() {
@@ -105,10 +105,12 @@ public class WorldSettings {
     public void setRecreationRule(String recreationRule) {
         this.recreationRule = recreationRule;
 
-        try {
-            cronRule = CRON_PARSER.parse(recreationRule).validate();
-        } catch (IllegalArgumentException e) {
-            cronRule = null;
+        if (recreationRule != null && !recreationRule.equals("")) {
+            try {
+                cronRule = CRON_PARSER.parse(recreationRule).validate();
+            } catch (Exception e) {
+                cronRule = null;
+            }
         }
     }
 

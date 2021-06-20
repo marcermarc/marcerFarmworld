@@ -30,8 +30,6 @@ public class PlayerController {
             return false;
         }
 
-        Bukkit.getLogger().info("Get:" + player.getBedSpawnLocation().toString());
-
         PlayerData playerData = new PlayerData();
         playerData.setUuid(player.getUniqueId());
         playerData.setReturnLocation(player.getLocation());
@@ -102,7 +100,8 @@ public class PlayerController {
     public void setSpawnpoint(@NotNull Player player, @Nullable Location spawnpoint) {
         Location current = player.getBedSpawnLocation();
 
-        if ((current == null && spawnpoint != null) || controller.getConfig().getWorldSettings().containsKey(current.getWorld().getName())) {
+        if ((current == null && spawnpoint != null)
+                || (current != null && controller.getConfig().getWorldSettings().containsKey(current.getWorld().getName()))) {
             player.setBedSpawnLocation(spawnpoint, true);
         }
     }

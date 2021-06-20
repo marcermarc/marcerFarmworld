@@ -4,10 +4,9 @@ author: marcermarc
 main: de.marcermarc.farmworld.Main
 api-version: 1.17
 
-libaries:
+libraries:
   - com.cronutils:cron-utils:9.1.5
 
 commands:
   marcerFarmworld:
     description: Configuration of this plugin
-  

@@ -22,6 +22,9 @@ public class Main extends JavaPlugin {
         registerEvents(pluginManager);
 
         controller.getWorldController().loadOrCreateFromConfig();
+
+        RecreateTimer timer = new RecreateTimer(controller);
+        timer.init();
     }
 
     private void registerEvents(PluginManager pluginManager) {
@@ -34,9 +37,6 @@ public class Main extends JavaPlugin {
 
         this.getCommand("marcerFarmworld").setExecutor(c);
         this.getCommand("marcerFarmworld").setTabCompleter(c);
-
-        RecreateTimer timer = new RecreateTimer(controller);
-        timer.init();
     }
 
     @Override

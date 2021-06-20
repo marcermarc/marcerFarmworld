@@ -2,7 +2,10 @@ name: marcerFarmworld
 version: 0.1.0
 author: marcermarc
 main: de.marcermarc.farmworld.Main
-api-version: 1.16
+api-version: 1.17
+
+libaries:
+  - com.cronutils:cron-utils:9.1.5
 
 commands:
   marcerFarmworld:

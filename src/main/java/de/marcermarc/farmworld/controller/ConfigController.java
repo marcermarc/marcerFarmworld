@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ConfigController {
 
@@ -68,7 +69,7 @@ public class ConfigController {
 
     private void loadWorlds() {
         for (String name : worldSection.getKeys(false)) {
-            worldSettings.put(name, new WorldSettings(worldSection.getConfigurationSection(name)));
+            worldSettings.put(name, new WorldSettings(Objects.requireNonNull(worldSection.getConfigurationSection(name))));
         }
     }
     //endregion

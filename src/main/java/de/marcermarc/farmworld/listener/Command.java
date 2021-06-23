@@ -14,9 +14,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -62,7 +62,7 @@ public class Command implements CommandExecutor, TabCompleter, Listener {
 //    private static final List<String> ARG3_CONFIG_ADDREMOVE = Arrays.asList(ADD, REMOVE);
 //    private static final List<String> ARG3_CONFIG_TRUEFALSE = Arrays.asList(TRUE, FALSE);
 
-    private PluginController controller;
+    private final PluginController controller;
 
     public Command(PluginController controller) {
         this.controller = controller;
@@ -70,7 +70,7 @@ public class Command implements CommandExecutor, TabCompleter, Listener {
 
     //region CommandExecutor
     @Override
-    public boolean onCommand(CommandSender commandSender, org.bukkit.command.Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender commandSender, org.bukkit.command.@NotNull Command command, String s, String[] args) {
         if (args.length == 0) {
             commandSender.sendMessage(Messages.getInfo());
             return true;
@@ -107,7 +107,7 @@ public class Command implements CommandExecutor, TabCompleter, Listener {
                     return true;
                 case 2:
                     // set here
-                    if (args[1].equals(HERE) && commandSender instanceof Player) {
+                    if (commandSender instanceof Player && args[1].equals(HERE)) {
                         Location location = ((Player) commandSender).getLocation();
                         controller.getConfig().setDefaultReturnLocation(location); // ToDo not a farmworld
                         return true;
@@ -283,7 +283,7 @@ public class Command implements CommandExecutor, TabCompleter, Listener {
         } else if (commandSender instanceof BlockCommandSender) {
             Location commandblockLocation = ((BlockCommandSender) commandSender).getBlock().getLocation();
 
-            return commandblockLocation.getWorld()
+            return Objects.requireNonNull(commandblockLocation.getWorld())
                     .getNearbyEntities(commandblockLocation, 10.0, 10.0, 10.0)
                     .stream()
                     .filter(x -> x instanceof Player)
@@ -299,99 +299,90 @@ public class Command implements CommandExecutor, TabCompleter, Listener {
 
     //region TabComplete
     @Override
-    public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String alias, String[] args) {
         switch (args.length) {
-//            case 1:
-//                return onTabCompleteArg1(sender, args);
-//            case 2:
-//                return onTabCompleteArg2(sender, args);
-//            case 3:
-//                return onTabCompleteArg3(sender, args);
-//            case 4:
-//                return onTabCompleteArg4(sender, args);
+            case 1:
+                return onTabCompleteArg1(sender, args);
+            case 2:
+                return onTabCompleteArg2(sender, args);
+            case 3:
+                return onTabCompleteArg3(sender, args);
+            case 4:
+                return onTabCompleteArg4(sender, args);
+            case 5:
+                return onTabCompleteArg5(sender, args);
+            case 6:
+                return onTabCompleteArg6(sender, args);
+            case 7:
+                return onTabCompleteArg7(sender, args);
             default:
                 return null;
         }
     }
 
-  /*  private List<String> onTabCompleteArg1(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            return Util.tabCompleteFilter(ARG1_CONSOLE, args[0]);
-        } else if (sender.isOp()) {
-            return Util.tabCompleteFilter(ARG1_OP, args[0]);
-        } else {
-            return Util.tabCompleteFilter(ARG1_NO_OP, args[0]);
-        }
+    private List<String> onTabCompleteArg1(CommandSender sender, String[] args) {
+        List<String> completions = new ArrayList<>();
+
+        completions.add(WORLDS);
+        completions.add(JOIN);
+        completions.add(RETURN);
+        completions.add(DEFAULT_RETURN_LOC);
+        return completions;
     }
 
     private List<String> onTabCompleteArg2(CommandSender sender, String[] args) {
-        if (args[0].equalsIgnoreCase(CONFIG)) {
-            if (sender.isOp()) {
-                return Util.tabCompleteFilter(ARG2_OP_CONFIG, args[1]);
-            } else {
-                return Util.tabCompleteFilter(ARG2_NO_OP_CONFIG, args[1]);
-            }
-        }
-        return null;
+        List<String> completions = new ArrayList<>();
+
+        if (args[0].equalsIgnoreCase(WORLDS))
+            completions.addAll(Arrays.asList(ADD, REMOVE, RECREATE, EDIT));//EDIT does nothing yet :|
+        if (args[0].equalsIgnoreCase(JOIN)) Bukkit.getWorlds().forEach(x -> completions.add(x.getName()));
+        if (args[0].equalsIgnoreCase(DEFAULT_RETURN_LOC)) completions.add(HERE);
+
+        return completions;
     }
 
     private List<String> onTabCompleteArg3(CommandSender sender, String[] args) {
-        if (args[0].equalsIgnoreCase(CONFIG))
-            if (args[1].equalsIgnoreCase(BASE_BLOCKS) || args[1].equalsIgnoreCase(ITEMS)) {
-                return Util.tabCompleteFilter(ARG3_CONFIG_ADDREMOVE, args[2]);
-            } else if (args[1].equalsIgnoreCase(MAX_TIER)) {
-                return Collections.singletonList("[<tier>]");
-            } else if (args[1].equalsIgnoreCase(DEBUG)) {
-                return Util.tabCompleteFilter(ARG3_CONFIG_TRUEFALSE, args[2]);
-            }
-        return null;
+        List<String> completions = new ArrayList<>();
+
+        if (args[1].equals(ADD)) completions.add("Enter-a-name-please");
+        if (args[1].equals(REMOVE) || args[1].equals(RECREATE))
+            Bukkit.getWorlds().forEach(x -> completions.add(x.getName()));
+        return completions;
     }
 
     private List<String> onTabCompleteArg4(CommandSender sender, String[] args) {
-        if (args[0].equalsIgnoreCase(CONFIG) && sender.isOp()) {
-            if (args[1].equalsIgnoreCase(BASE_BLOCKS)) {
-                if (args[2].equalsIgnoreCase(ADD)) {
-                    return Util.tabCompleteFilter(
-                            Stream.of(Material.values())
-                                    .filter(Material::isBlock)
-                                    .filter(material -> !controller.getConfig().getAllowedBaseBlocks().contains(material))
-                                    .map(Util::materialToString)
-                                    .collect(Collectors.toList()),
-                            args[3]);
+        List<String> completions = new ArrayList<>();
 
-                } else if (args[2].equals(REMOVE)) {
-                    return Util.tabCompleteFilter(
-                            Stream.of(Material.values())
-                                    .filter(Material::isBlock)
-                                    .filter(material -> controller.getConfig().getAllowedBaseBlocks().contains(material))
-                                    .map(Util::materialToString)
-                                    .collect(Collectors.toList()),
-                            args[3]);
-                }
-            } else if (args[1].equalsIgnoreCase(ITEMS)) {
-                if (args[2].equalsIgnoreCase(ADD)) {
-                    return Util.tabCompleteFilter(
-                            Stream.of(Material.values())
-                                    .filter(Material::isItem)
-                                    .filter(material -> !controller.getConfig().getAllowedActivationItems().contains(material))
-                                    .map(Util::materialToString)
-                                    .collect(Collectors.toList()),
-                            args[3]);
+        if (args[1].equals(ADD))
+            completions.addAll(Arrays.asList(World.Environment.NETHER.name(), World.Environment.NORMAL.name(), World.Environment.THE_END.name()));
 
-                } else if (args[2].equals(REMOVE)) {
-                    return Util.tabCompleteFilter(
-                            Stream.of(Material.values())
-                                    .filter(Material::isItem)
-                                    .filter(material -> controller.getConfig().getAllowedActivationItems().contains(material))
-                                    .map(Util::materialToString)
-                                    .collect(Collectors.toList()),
-                            args[3]);
-                }
-            }
-        }
-        return null;
-    }*/
+        return completions;
+    }
 
+    private List<String> onTabCompleteArg5(CommandSender sender, String[] args) {
+        List<String> completions = new ArrayList<>();
 
-    //endregion
+        if (args[1].equals(ADD)) completions.add(WorldType.NORMAL.getName());
+        if (args[3].equals(World.Environment.NORMAL.name()))
+            completions.addAll(Arrays.asList(WorldType.AMPLIFIED.getName(), WorldType.FLAT.getName()));
+        return completions;
+    }
+
+    private List<String> onTabCompleteArg6(CommandSender sender, String[] args) {
+        List<String> completions = new ArrayList<>();
+
+        if (args[1].equals(ADD))
+            completions.addAll(Arrays.asList("true", "false"));
+
+        return completions;
+    }
+
+    private List<String> onTabCompleteArg7(CommandSender sender, String[] args) {
+        List<String> completions = new ArrayList<>();
+
+        if (args[1].equals(ADD))
+            completions.addAll(Arrays.asList("30000000", "250", "100"));
+
+        return completions;
+    }
 }

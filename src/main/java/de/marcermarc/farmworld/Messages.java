@@ -28,6 +28,10 @@ public class Messages {
     private Messages() {
     }
 
+    public static String getMessagePrefix() {
+        return MESSAGE_PREFIX;
+    }
+
     public static String getInfo() {
         return INFO;
     }

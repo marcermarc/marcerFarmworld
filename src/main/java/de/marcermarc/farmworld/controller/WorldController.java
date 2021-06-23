@@ -3,10 +3,7 @@ package de.marcermarc.farmworld.controller;
 import de.marcermarc.farmworld.Messages;
 import de.marcermarc.farmworld.Util;
 import de.marcermarc.farmworld.models.WorldSettings;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.block.data.FaceAttachable;
@@ -133,8 +130,13 @@ public class WorldController {
         }
 
         createReturnPossibility(world);
-
-        world.setSpawnLocation(Util.getFarmWorldSpawnLocation(world));
+        Location spawnLoc = Util.getFarmWorldSpawnLocation(world);
+        world.setSpawnLocation(spawnLoc);
+        if (settings.getEnvironment().equals(World.Environment.NETHER) && spawnLoc.getY() >= 128) {
+            String warnString = String.format("The spawnloaction of %s is invalid.", world.getName());
+            Bukkit.getLogger().log(Level.WARNING, warnString);
+            if (player != null) player.sendMessage(Messages.getMessagePrefix() + warnString);
+        }
         world.getWorldBorder().setSize(settings.getWorldsize());
         world.setPVP(false); // ToDo configurable
 

@@ -7,7 +7,6 @@ import de.marcermarc.farmworld.models.WorldSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerController {
@@ -44,7 +43,7 @@ public class PlayerController {
         return true;
     }
 
-    public boolean returnPlayer(@NotNull Player player) {
+    public boolean returnPlayer(Player player) {
         PlayerData playerData = controller.getPlayerData().getData(player.getUniqueId());
 
         if (playerData == null) {
@@ -55,7 +54,7 @@ public class PlayerController {
         return true;
     }
 
-    private void returnPlayer(@NotNull Player player, @NotNull PlayerData data) {
+    private void returnPlayer(Player player, PlayerData data) {
         returnPlayerTeleportation(player, data);
 
         setSpawnpoint(player, data.getSpawnpoint());
@@ -63,7 +62,7 @@ public class PlayerController {
         controller.getPlayerData().removeData(player.getUniqueId());
     }
 
-    private void returnPlayerTeleportation(@NotNull Player player, @NotNull PlayerData data) {
+    private void returnPlayerTeleportation(Player player, PlayerData data) {
         if (Util.testForAir(data.getReturnLocation())) {
             player.teleport(data.getReturnLocation());
             return;
@@ -97,7 +96,7 @@ public class PlayerController {
         player.teleport(newLocation);
     }
 
-    public void setSpawnpoint(@NotNull Player player, @Nullable Location spawnpoint) {
+    public void setSpawnpoint(Player player, @Nullable Location spawnpoint) {
         Location current = player.getBedSpawnLocation();
 
         if ((current == null && spawnpoint != null)

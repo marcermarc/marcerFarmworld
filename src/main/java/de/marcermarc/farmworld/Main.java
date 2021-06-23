@@ -9,6 +9,8 @@ import de.marcermarc.farmworld.timer.RecreateTimer;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
+
 public class Main extends JavaPlugin {
 
     private PluginController controller;
@@ -35,8 +37,8 @@ public class Main extends JavaPlugin {
         Command c = new Command(controller);
         pluginManager.registerEvents(c, this);
 
-        this.getCommand("marcerFarmworld").setExecutor(c);
-        this.getCommand("marcerFarmworld").setTabCompleter(c);
+        Objects.requireNonNull(this.getCommand("marcerFarmworld")).setExecutor(c);
+        Objects.requireNonNull(this.getCommand("marcerFarmworld")).setTabCompleter(c);
     }
 
     @Override

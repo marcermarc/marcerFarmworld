@@ -6,7 +6,7 @@
 
     <groupId>de.marcermarc.farmworld</groupId>
     <artifactId>marcerFarmworld</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 
     <build>
         <plugins>

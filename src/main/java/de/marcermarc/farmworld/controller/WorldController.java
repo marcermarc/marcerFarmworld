@@ -50,6 +50,8 @@ public class WorldController {
 
         worldSettings.setLastRecreation(ZonedDateTime.now());
 
+        controller.getConfig().addOrUpdateWorld(name, worldSettings);
+
         return delete(name, worldSettings)
                 && create(name, worldSettings, player);
     }
@@ -108,6 +110,11 @@ public class WorldController {
     }
 
     public boolean create(String name, WorldSettings settings, @Nullable Player player) {
+        if (Bukkit.getWorld(name) != null) {
+            // world already exists
+            return true;
+        }
+
         WorldCreator creator = new WorldCreator(name);
 
         creator.environment(settings.getEnvironment());
@@ -125,13 +132,11 @@ public class WorldController {
             return false;
         }
 
-        if (!isWorldNew(world)) {
-            return true;
-        }
-
         createReturnPossibility(world);
+
         Location spawnLoc = Util.getFarmWorldSpawnLocation(world);
         world.setSpawnLocation(spawnLoc);
+
         if (settings.getEnvironment().equals(World.Environment.NETHER) && spawnLoc.getY() >= 128) {
             String warnString = String.format("The spawnloaction of %s is invalid.", world.getName());
             Bukkit.getLogger().log(Level.WARNING, warnString);
@@ -159,6 +164,8 @@ public class WorldController {
         Switch buttonFace = (Switch) button.getBlockData();
         buttonFace.setAttachedFace(FaceAttachable.AttachedFace.FLOOR);
         button.setBlockData(buttonFace, false);
+
+        world.unloadChunkRequest(0,0);
     }
 
     private Optional<World> getFarmworld(String name) {

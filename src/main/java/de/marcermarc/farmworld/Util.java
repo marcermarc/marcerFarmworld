@@ -49,7 +49,8 @@ public class Util {
             return false;
         }
 
-        return location.getBlock().getType() == Material.AIR
-                && location.add(0, 1, 0).getBlock().getType() == Material.AIR;
+        return location.getBlock().getType().isAir()
+                && location.add(0, 1, 0).getBlock().getType().isAir()
+                && location.add(0, 2, 0).getBlock().getType().isAir();
     }
 }

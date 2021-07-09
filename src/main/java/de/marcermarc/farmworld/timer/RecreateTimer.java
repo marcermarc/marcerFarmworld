@@ -34,9 +34,9 @@ public class RecreateTimer implements Runnable {
             if (rule != null) {
                 ExecutionTime execTime = ExecutionTime.forCron(rule);
 
-                Optional<ZonedDateTime> nextFortThisWorld = execTime.nextExecution(ZonedDateTime.now());
+                Optional<ZonedDateTime> nextForThisWorld = execTime.nextExecution(entry.getValue().getLastRecreation());
 
-                if (nextFortThisWorld.isPresent() && nextFortThisWorld.get().isAfter(ZonedDateTime.now())) {
+                if (nextForThisWorld.isPresent() && nextForThisWorld.get().isBefore(ZonedDateTime.now())) {
                     controller.getMain().getServer().getScheduler().runTask(controller.getMain(),
                         () -> controller.getWorldController().recreate(entry.getKey(), null)
                     );
